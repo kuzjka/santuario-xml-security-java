@@ -20,6 +20,8 @@ package org.apache.xml.security.test.dom.parser;
 
 import org.apache.xml.security.parser.XMLParserException;
 import org.apache.xml.security.utils.XMLUtils;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
@@ -154,10 +156,16 @@ class XMLParserEdgeCasesTest {
                 XMLUtils.read(bais, false);
             } catch (XMLParserException e) {
                 // Stack overflow protection is acceptable
-                assertTrue(e.getMessage().contains("depth") || 
-                          e.getMessage().contains("stack") ||
-                          e.getMessage().contains("nested"),
-                          "Deep nesting should trigger protection");
+                MatcherAssert.assertThat("Deep nesting should trigger protection",
+                        e.getMessage(), Matchers.anyOf(
+                                Matchers.containsString("depth"),
+                                Matchers.containsString("stack"),
+                                Matchers.containsString("nested")
+                        ));
+//                assertTrue(e.getMessage().contains("depth") ||
+//                          e.getMessage().contains("stack") ||
+//                          e.getMessage().contains("nested"),
+//                          "Deep nesting should trigger protection");
             }
         }, "Parser should handle deep nesting gracefully");
     }
